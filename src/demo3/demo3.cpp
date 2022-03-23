@@ -1,4 +1,4 @@
-// DEMO 2 -- 3-COLOR TRIANGLE
+// DEMO 1 -- ROTATING SQUARE
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,7 +14,7 @@ int main()
     }
 
     // Create GLFW window
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(480, 480, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -32,15 +32,17 @@ int main()
 
     float vertices[] = 
     {
-        // Position     // Color
-        0.0f, 0.0f,     1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f,     0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f,     0.0f, 0.0f, 1.0f
+        // Position
+        -0.5f, -0.5f,
+         0.5f, -0.5f,
+        -0.5f, 0.5f,
+         0.5f, 0.5f
     };
 
     uint32_t indices[] = 
     {
-        0, 1, 2
+        0, 1, 2,
+        2, 1, 3
     };
 
     uint32_t va, vb, eb;
@@ -51,10 +53,8 @@ int main()
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER,vb);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(0 * sizeof(float))); // Position attribute
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(0 * sizeof(float))); // Position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float))); // Color attribute
-    glEnableVertexAttribArray(1);
 
     // Setup index buffer
     glGenBuffers(1, &eb);
@@ -65,14 +65,20 @@ int main()
 
     glBindVertexArray(va);
 
-    Shader shader("src/demo2/vertexshader.glsl", "src/demo2/fragmentshader.glsl");
+    Shader shader("src/demo3/vertexshader.glsl", "src/demo3/fragmentshader.glsl");
     shader.Use();
+
+    float rot = 0.0f;
+    unsigned int RotLoc = glGetUniformLocation(shader.GetID(), "Rot");
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glDrawElements(GL_TRIANGLES, 4, GL_UNSIGNED_INT, 0);
+        
+        glUniform1f(RotLoc, rot); // Set square rotation uniform
+        rot += 0.001f;
+        
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
