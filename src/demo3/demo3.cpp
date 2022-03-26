@@ -30,6 +30,12 @@ int main()
         return -1;
     }
 
+    // Call glViewport when window is resized
+    glfwSetWindowSizeCallback(window,[](GLFWwindow* window, int width, int height)
+    {
+        glViewport(0, 0, width, height);
+    });
+
     float vertices[] = 
     {
         // Position
